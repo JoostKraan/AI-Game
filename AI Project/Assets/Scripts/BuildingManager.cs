@@ -1,11 +1,14 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public class BuildingManager : MonoBehaviour
 {
-    public GameObject buildingPrefab;  // The prefab of the building object
+    public GameObject[] buildingPrefabs;  // The prefab of the building object
+    public Button[] buttons;
     public LayerMask groundLayer; // The layer for any objects representing ground
     public float buildHeight; // The height of the currently placed building
     public bool buildMode; // If the game is currently in buildMode
+    public float currentIndex;
     private GameObject currentBuilding; // The currently placed building
     private bool isPlacing = false;      // Flag to check if a building is currently being placed
 
@@ -30,6 +33,10 @@ public class BuildingManager : MonoBehaviour
             {
                 DestroyPlacingBuilding();
             }
+            else
+            {
+                currentIndex = 0;
+            }
         }
 
         if (!buildMode) return;
@@ -53,12 +60,23 @@ public class BuildingManager : MonoBehaviour
         {
             DestroyPlacingBuilding();
         }
+
+        currentIndex += Input.mouseScrollDelta.y;
+        currentIndex = Mathf.Clamp(currentIndex, 0, buildingPrefabs.Length - 1);
+
+
+        foreach (var button in buttons)
+        {
+            button.interactable = false;
+        }
+
+        buttons[(int)currentIndex].interactable = true;
     }
 
     void StartPlacingBuilding()
     {
         isPlacing = true;
-        currentBuilding = Instantiate(buildingPrefab);
+        currentBuilding = Instantiate(buildingPrefabs[(int)currentIndex]);
     }
 
     void StopPlacingBuilding()
