@@ -9,6 +9,7 @@ public class ZombieController : MonoBehaviour
     private NavMeshAgent navMeshAgent;
     private Transform target;
     private float timer = 0f;
+    public bool bruteZombie = false;
 
     void Start()
     {
@@ -74,9 +75,8 @@ public class ZombieController : MonoBehaviour
 
     void DamageCore()
     {
-        // Voeg hier code toe om schade toe te brengen aan de Core
-        // Bijvoorbeeld: target.GetComponent<CoreScript>().TakeDamage(10);
-        // Pas dit aan op basis van je Core-implementatie
+        if(bruteZombie) CoreHealth.coreStaticHealth -= 20;
+        else CoreHealth.coreStaticHealth -= 5;
         Debug.Log("De Core is beschadigd!");
     }
 }
