@@ -3,14 +3,20 @@ using UnityEngine.UI;
 
 public class BuildingManager : MonoBehaviour
 {
-    public GameObject[] buildingPrefabs;  // The prefab of the building object
-    public Button[] buttons;
+    public GameObject[] buildingPrefabs;  // The prefabs of possible selected objects
+    public Button[] buttons; // The buttons for UI
+    public GameObject buildingUI; // The UI for building selection
     public LayerMask groundLayer; // The layer for any objects representing ground
     public float buildHeight; // The height of the currently placed building
     public bool buildMode; // If the game is currently in buildMode
-    public float currentIndex;
+    public float currentIndex; // The current index for the building prefabs
     private GameObject currentBuilding; // The currently placed building
-    private bool isPlacing = false;      // Flag to check if a building is currently being placed
+    private bool isPlacing = false; // Flag to check if a building is currently being placed
+
+    private void Start()
+    {
+        buildingUI.SetActive(false); // Hide building UI on start
+    }
 
     void Update()
     {
@@ -25,9 +31,11 @@ public class BuildingManager : MonoBehaviour
 
     void HandleInput()
     {
+        // Toggle build mode and show/hide building UI
         if (Input.GetKeyDown(KeyCode.F))
         {
             buildMode = !buildMode;
+            buildingUI.SetActive(buildMode);
 
             if (!buildMode)
             {
@@ -41,7 +49,8 @@ public class BuildingManager : MonoBehaviour
 
         if (!buildMode) return;
 
-        if (Input.GetMouseButtonDown(0)) // Left mouse button to place the building
+        // Left mouse button to place or confirm the building
+        if (Input.GetMouseButtonDown(0))
         {
             if (!isPlacing)
             {
@@ -56,15 +65,17 @@ public class BuildingManager : MonoBehaviour
             }
         }
 
+        // Cancel building placement on escape
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             DestroyPlacingBuilding();
         }
 
+        // Change the current building prefab using the mouse scroll wheel
         currentIndex += Input.mouseScrollDelta.y;
         currentIndex = Mathf.Clamp(currentIndex, 0, buildingPrefabs.Length - 1);
 
-
+        // Update UI button interactivity based on the current index
         foreach (var button in buttons)
         {
             button.interactable = false;
@@ -92,6 +103,7 @@ public class BuildingManager : MonoBehaviour
         currentBuilding = null;
     }
 
+    // Snap a position to a grid
     Vector3 SnapToGrid(Vector3 position)
     {
         float gridSize = 1.0f; // Adjust this value based on your grid size
@@ -103,6 +115,7 @@ public class BuildingManager : MonoBehaviour
         return new Vector3(x, y, z);
     }
 
+    // Check if the building can be placed at the current position
     bool CanPlaceBuilding()
     {
         Collider collider = currentBuilding.GetComponent<Collider>();
@@ -121,6 +134,7 @@ public class BuildingManager : MonoBehaviour
         return true;
     }
 
+    // Update the position of the building being placed based on mouse position
     void UpdateBuildingPosition()
     {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -134,11 +148,12 @@ public class BuildingManager : MonoBehaviour
         }
     }
 
+    // Rotate the building when 'R' key is pressed
     void HandleRotationInput()
     {
         float rotationSpeed = 5f;
 
-        if (Input.GetKeyDown(KeyCode.R)) // Rotate the building when 'R' key is pressed
+        if (Input.GetKeyDown(KeyCode.R))
         {
             currentBuilding.transform.Rotate(Vector3.up, 90f);
         }
