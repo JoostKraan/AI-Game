@@ -18,7 +18,7 @@ public class Bullet : MonoBehaviour
         // If the Health script is found, update the health value
         if (healthScript != null)
         {
-            healthScript.health  *= damage;
+            healthScript.health -= damage;
         }
 
         // Destroy the bullet
