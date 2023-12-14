@@ -3,19 +3,26 @@ using UnityEngine;
 public class Bullet : MonoBehaviour
 {
     public float lifetime = 10f; // Adjust this to set the lifetime of the bullet
+    public int damage = 50;
 
     void Start()
     {
         // Destroy the bullet after a specified lifetime
         Destroy(gameObject, lifetime);
     }
-
-    // You may want to handle collisions with other objects if necessary
     void OnCollisionEnter(Collision collision)
     {
-        // Add collision handling logic here if needed
+        // Check if the object the bullet collided with has a Health script
+        ZombieHealth healthScript = collision.gameObject.GetComponent<ZombieHealth>();
 
-        // Destroy the bullet upon collision
+        // If the Health script is found, update the health value
+        if (healthScript != null)
+        {
+            healthScript.health  *= damage;
+        }
+
+        // Destroy the bullet
         Destroy(gameObject);
     }
+
 }
