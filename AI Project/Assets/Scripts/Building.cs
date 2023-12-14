@@ -7,7 +7,7 @@ public class Building : MonoBehaviour
     public int maxHealth = 100; // Maximum health of the building
     private int currentHealth;   // Current health of the building
 
-    void Start()
+    protected virtual void Start()
     {
         currentHealth = maxHealth; // Initialize current health to maximum health
     }

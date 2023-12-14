@@ -12,7 +12,8 @@ GameObject:
   - component: {fileID: 7282454044565052793}
   - component: {fileID: 1477771615377087906}
   - component: {fileID: 506798185916191758}
-  m_Layer: 0
+  - component: {fileID: 1801488818651975693}
+  m_Layer: 8
   m_Name: Mine
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -100,12 +101,37 @@ SphereCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
   m_Radius: 2.26
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &1801488818651975693
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8282636548440714995}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 332e6b12bdbac4b4a8b56eeee617939c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHealth: 100
+  explosionRadius: 5
+  damage: 50
+  delay: 2
+  mineMeshRenderer: {fileID: 740735543442744275}
+  beepSound: {fileID: 0}
+  explosionParticlesPrefab: {fileID: 7934711535892102689, guid: 09166c59e741d06479285cf2b90fb8d1,
+    type: 3}
+  explosionForce: 1000
+  regularBeepClip: {fileID: 0}
+  fastBeepClip: {fileID: 0}
+  explosionClip: {fileID: 0}
+  canExplode: 0
 --- !u!1 &8689397863592957819
 GameObject:
   m_ObjectHideFlags: 0
@@ -117,8 +143,7 @@ GameObject:
   - component: {fileID: 4001281857096082004}
   - component: {fileID: 8484218960714732850}
   - component: {fileID: 740735543442744275}
-  - component: {fileID: 6832839177004724586}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Sphere
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -190,24 +215,3 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!135 &6832839177004724586
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8689397863592957819}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Radius: 0.5
-  m_Center: {x: 0, y: 0, z: 0}

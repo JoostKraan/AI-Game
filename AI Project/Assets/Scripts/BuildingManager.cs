@@ -7,6 +7,7 @@ public class BuildingManager : MonoBehaviour
     public Button[] buttons; // The buttons for UI
     public GameObject buildingUI; // The UI for building selection
     public LayerMask groundLayer; // The layer for any objects representing ground
+    public LayerMask collisionLayer;
     public float buildHeight; // The height of the currently placed building
     public bool buildMode; // If the game is currently in buildMode
     public float currentIndex; // The current index for the building prefabs
@@ -26,6 +27,15 @@ public class BuildingManager : MonoBehaviour
         {
             UpdateBuildingPosition();
             HandleRotationInput();
+            
+            if (currentBuilding.GetComponent<Building>() is Turret turret)
+            {
+                turret.canShoot = false;
+            }
+            else if (currentBuilding.GetComponent<Building>() is Mine mine)
+            {
+                mine.canExplode = false;
+            }
         }
     }
 
@@ -93,6 +103,16 @@ public class BuildingManager : MonoBehaviour
     void StopPlacingBuilding()
     {
         isPlacing = false;
+
+        if (currentBuilding.GetComponent<Building>() is Turret turret)
+        {
+            turret.canShoot = true;
+        }
+        else if (currentBuilding.GetComponent<Building>() is Mine mine)
+        {
+            mine.canExplode = true;
+        }
+
         currentBuilding = null;
     }
 
@@ -119,7 +139,7 @@ public class BuildingManager : MonoBehaviour
     bool CanPlaceBuilding()
     {
         Collider collider = currentBuilding.GetComponent<Collider>();
-        Collider[] colliders = Physics.OverlapBox(collider.bounds.center, collider.bounds.extents / 2);
+        Collider[] colliders = Physics.OverlapBox(collider.bounds.center, collider.bounds.extents / 2, currentBuilding.transform.rotation, collisionLayer);
 
         foreach (Collider collider2 in colliders)
         {
@@ -151,8 +171,6 @@ public class BuildingManager : MonoBehaviour
     // Rotate the building when 'R' key is pressed
     void HandleRotationInput()
     {
-        float rotationSpeed = 5f;
-
         if (Input.GetKeyDown(KeyCode.R))
         {
             currentBuilding.transform.Rotate(Vector3.up, 90f);

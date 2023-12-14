@@ -2,40 +2,55 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Turret : MonoBehaviour
+public class Turret : Building
 {
     public float rotationSpeed = 5f;
     public float shootingCooldown = 1f;
     public float shootingRange = 10f;
     public GameObject bulletPrefab;
     public Transform bulletSpawnPoint;
-    public float bulletForce = 10f; // Adjust the force as needed
+    public float bulletForce = 10f;
+    public AudioClip shootSound;
+    public ParticleSystem muzzleFlash;
 
     private Transform target;
     private float lastShotTime;
+    private AudioSource audioSource;
 
-    private void Start()
+    public GameObject barrel;
+    public float barrelRotationSpeed = 5f;
+    public float barrelRotationAcceleration = 2f;
+
+    public float BarrelRotationRandomness = 50f;
+    public float TurretRotationRandomness = 10.0f;
+    public float TurretTargetRotationThreshold = 10.0f;
+    public float BarrelZRotationIncrement = 50f;
+
+    public bool canShoot;
+
+    protected override void Start()
     {
+        base.Start();
+
         FindNearestEnemy();
+        audioSource = GetComponent<AudioSource>();
     }
 
     private void Update()
     {
+        if (!canShoot) return;
+
         if (target != null && Vector3.Distance(transform.position, target.position) <= shootingRange)
         {
-            // Rotate towards the target on the Y-axis only
             RotateTowardsTarget();
 
-            // Check if the turret is close enough to the target rotation and enough time has passed since the last shot
             if (IsTurretCloseToTargetRotation() && Time.time - lastShotTime >= shootingCooldown)
             {
-                // Shoot bullets
                 Shoot();
             }
         }
         else
         {
-            // If there's no target or target is out of range, find the nearest enemy
             FindNearestEnemy();
         }
     }
@@ -43,25 +58,38 @@ public class Turret : MonoBehaviour
     private void RotateTowardsTarget()
     {
         Vector3 direction = target.position - transform.position;
-        direction.y = 0f; // Ignore the Y-axis component
+        direction.y = 0f;
 
-        // Check if the target is in range before updating rotation
         if (Vector3.Distance(transform.position, target.position) <= shootingRange)
         {
             Quaternion toRotation = Quaternion.LookRotation(direction, Vector3.up);
-
-            // Introduce randomness to the rotation
-            float randomAngle = Random.Range(-50f, 50f); // Adjust the range as needed
+            float randomAngle = Random.Range(-TurretRotationRandomness, TurretRotationRandomness);
             toRotation *= Quaternion.Euler(0, randomAngle, 0);
 
             transform.rotation = Quaternion.Slerp(transform.rotation, toRotation, rotationSpeed * Time.deltaTime);
+
+            if (barrel != null)
+            {
+                Quaternion barrelRotation = Quaternion.Euler(0, 0, BarrelZRotationIncrement);
+                Quaternion targetBarrelRotation = barrel.transform.rotation * barrelRotation;
+
+                // Apply lerp to achieve smoother start and stop
+                barrel.transform.rotation = Quaternion.Lerp(barrel.transform.rotation, targetBarrelRotation, Time.deltaTime * barrelRotationSpeed);
+
+                // Accelerate rotation
+                barrelRotationSpeed += barrelRotationAcceleration * Time.deltaTime;
+            }
+        }
+        else
+        {
+            // Decelerate rotation when not shooting
+            barrelRotationSpeed = Mathf.Lerp(barrelRotationSpeed, 0f, Time.deltaTime * barrelRotationAcceleration);
         }
     }
 
     private bool IsTurretCloseToTargetRotation()
     {
-        // Check if the turret is close enough to the target rotation (within 1 degree)
-        return Quaternion.Angle(transform.rotation, Quaternion.LookRotation(target.position - transform.position, Vector3.up)) < 10.0f;
+        return Quaternion.Angle(transform.rotation, Quaternion.LookRotation(target.position - transform.position, Vector3.up)) < TurretTargetRotationThreshold;
     }
 
     private void FindNearestEnemy()
@@ -78,7 +106,6 @@ public class Turret : MonoBehaviour
                 float distance = Vector3.Distance(transform.position, enemy.transform.position);
                 float rotationScore = Quaternion.Angle(transform.rotation, Quaternion.LookRotation(enemy.transform.position - transform.position, Vector3.up));
 
-                // Adjust the weighting by multiplying the rotation score by a factor (e.g., 0.1) to give more importance to distance
                 float combinedScore = distance + 0.1f * rotationScore;
 
                 if (combinedScore < minCombinedScore && distance <= shootingRange)
@@ -94,14 +121,11 @@ public class Turret : MonoBehaviour
 
     private void Shoot()
     {
-        // Instantiate a bullet
         GameObject bullet = Instantiate(bulletPrefab, bulletSpawnPoint.position, bulletSpawnPoint.rotation);
 
-        // Set the bullet's direction
         Bullet bulletController = bullet.GetComponent<Bullet>();
         if (bulletController != null)
         {
-            // Apply force to the bullet
             Rigidbody bulletRigidbody = bullet.GetComponent<Rigidbody>();
             if (bulletRigidbody != null)
             {
@@ -109,7 +133,16 @@ public class Turret : MonoBehaviour
             }
         }
 
-        // Update the last shot time
+        if (audioSource != null && shootSound != null)
+        {
+            audioSource.PlayOneShot(shootSound);
+        }
+
+        if (muzzleFlash != null)
+        {
+            muzzleFlash.Play();
+        }
+
         lastShotTime = Time.time;
     }
 }

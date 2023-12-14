@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-public class Mine : MonoBehaviour
+public class Mine : Building
 {
     public float explosionRadius = 5f;
     public int damage = 50;
@@ -16,9 +16,12 @@ public class Mine : MonoBehaviour
     public AudioClip explosionClip;
 
     private bool exploded = false;
+    public bool canExplode;
 
-    void Start()
+    protected override void Start()
     {
+        base.Start();
+
         // Disable the mesh renderer initially
         if (mineMeshRenderer != null)
         {
@@ -28,10 +31,12 @@ public class Mine : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
+        if (!canExplode) return;
+
         // Trigger the explosion immediately if an enemy enters the trigger zone
         if (!exploded && other.CompareTag("Zombie"))
         {
-            CancelInvoke(); // Cancel the scheduled explosion
+            //CancelInvoke(); // Cancel the scheduled explosion
             Invoke(nameof(Explode), delay);
             StartCoroutine(BlinkMesh());
         }
@@ -82,7 +87,9 @@ public class Mine : MonoBehaviour
 
     void Explode()
     {
+        print("boom 1");
         if (exploded) return; // Ensure the mine only explodes once
+        print("boom");
         exploded = true;
 
         // Stop blinking and hide the mesh
