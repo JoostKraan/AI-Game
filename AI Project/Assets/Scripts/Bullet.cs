@@ -19,13 +19,10 @@ public class Bullet : MonoBehaviour
         // If the ZombieHealth script is found, update the health value
         if (healthScript != null)
         {
-            healthScript.health -= damage;
-
-            // Spawn damage number prefab
+            healthScript.TakeDamage(damage);
             SpawnDamageNumber(collision.contacts[0].point);
         }
 
-        // Destroy the bullet
         Destroy(gameObject);
     }
     private void SpawnDamageNumber(Vector3 position)
