@@ -126,7 +126,7 @@ public class Mine : Building
                 ZombieHealth enemyHealth = hit.GetComponent<ZombieHealth>();
                 if (enemyHealth != null)
                 {
-                    enemyHealth.health -= damage;
+                    enemyHealth.currentHealth -= damage;
                 }
             }
         }
