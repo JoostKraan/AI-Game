@@ -9,6 +9,7 @@ public class Mine : MonoBehaviour
     public MeshRenderer mineMeshRenderer;
     public AudioSource beepSound;
     public ParticleSystem explosionParticlesPrefab;
+    public float explosionForce = 1000f; // Adjust the force as needed
 
     public AudioClip regularBeepClip;
     public AudioClip fastBeepClip;
@@ -104,6 +105,9 @@ public class Mine : MonoBehaviour
             explosionParticles.Play();
         }
 
+        // Apply explosive force
+        ApplyExplosiveForce();
+
         // Detect enemies in the explosion radius
         Collider[] colliders = Physics.OverlapSphere(transform.position, explosionRadius);
 
@@ -122,5 +126,22 @@ public class Mine : MonoBehaviour
 
         // Destroy the mine after the explosion
         Destroy(gameObject);
+    }
+
+    void ApplyExplosiveForce()
+    {
+        // Get all colliders in the explosion radius
+        Collider[] colliders = Physics.OverlapSphere(transform.position, explosionRadius);
+
+        foreach (Collider hit in colliders)
+        {
+            // Check if the object has a Rigidbody
+            Rigidbody rb = hit.GetComponent<Rigidbody>();
+            if (rb != null)
+            {
+                // Apply explosive force
+                rb.AddExplosionForce(explosionForce, transform.position, explosionRadius, 3.0f);
+            }
+        }
     }
 }
