@@ -12,6 +12,9 @@ GameObject:
   - component: {fileID: 3030275800765776375}
   - component: {fileID: 3718740103064378018}
   - component: {fileID: 68304361672431460}
+  - component: {fileID: -2661247788631422770}
+  - component: {fileID: 5998262164437086116}
+  - component: {fileID: -6520364224515699564}
   m_Layer: 0
   m_Name: EnemyTest
   m_TagString: Zombie
@@ -107,3 +110,51 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!195 &-2661247788631422770
+NavMeshAgent:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3570617123806146448}
+  m_Enabled: 1
+  m_AgentTypeID: 0
+  m_Radius: 0.5
+  m_Speed: 4
+  m_Acceleration: 8
+  avoidancePriority: 50
+  m_AngularSpeed: 120
+  m_StoppingDistance: 0
+  m_AutoTraverseOffMeshLink: 1
+  m_AutoBraking: 1
+  m_AutoRepath: 1
+  m_Height: 2
+  m_BaseOffset: 1
+  m_WalkableMask: 4294967295
+  m_ObstacleAvoidanceType: 4
+--- !u!114 &5998262164437086116
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3570617123806146448}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: db6d07b67c8e81a44996370e6f698831, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  coreTag: Core
+--- !u!114 &-6520364224515699564
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3570617123806146448}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0af0a719d076e90438a31a46a31fc261, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  health: 50
