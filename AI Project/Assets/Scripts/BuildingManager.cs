@@ -92,6 +92,7 @@ public class BuildingManager : MonoBehaviour
         }
 
         buttons[(int)currentIndex].interactable = true;
+        print(buttons[(int)currentIndex].interactable);
     }
 
     void StartPlacingBuilding()
