@@ -1069,6 +1069,12 @@ PrefabInstance:
       propertyPath: canShoot
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5028244250162687680, guid: 7a0e78cbb0f04364f96ad04e57d98391,
+        type: 3}
+      propertyPath: projectilePrefab
+      value: 
+      objectReference: {fileID: 1806911955510591766, guid: c6adfc40edaf0ec4693d9d31e331a691,
+        type: 3}
     - target: {fileID: 8786978062828860209, guid: 7a0e78cbb0f04364f96ad04e57d98391,
         type: 3}
       propertyPath: m_LocalPosition.x
