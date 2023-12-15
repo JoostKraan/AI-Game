@@ -12,6 +12,7 @@ public class Turret : Building
     public float bulletForce = 10f;
     public AudioClip shootSound;
     public ParticleSystem muzzleFlash;
+    public GameObject modelToRotate;
 
     private Transform target;
     private float lastShotTime;
@@ -23,7 +24,7 @@ public class Turret : Building
 
     public float BarrelRotationRandomness = 50f;
     public float TurretRotationRandomness = 10.0f;
-    public float TurretTargetRotationThreshold = 10.0f;
+    public float TurretTargetRotationThreshold = 50.0f;
     public float BarrelZRotationIncrement = 50f;
 
     public bool canShoot;
@@ -57,16 +58,16 @@ public class Turret : Building
 
     private void RotateTowardsTarget()
     {
-        Vector3 direction = target.position - transform.position;
+        Vector3 direction = target.position - modelToRotate.transform.position;
         direction.y = 0f;
 
-        if (Vector3.Distance(transform.position, target.position) <= shootingRange)
+        if (Vector3.Distance(modelToRotate.transform.position, target.position) <= shootingRange)
         {
             Quaternion toRotation = Quaternion.LookRotation(direction, Vector3.up);
             float randomAngle = Random.Range(-TurretRotationRandomness, TurretRotationRandomness);
-            toRotation *= Quaternion.Euler(0, randomAngle, 0);
+            toRotation *= Quaternion.Euler(0, randomAngle + 180f, 0);
 
-            transform.rotation = Quaternion.Slerp(transform.rotation, toRotation, rotationSpeed * Time.deltaTime);
+            modelToRotate.transform.rotation = Quaternion.Slerp(modelToRotate.transform.rotation, toRotation, rotationSpeed * Time.deltaTime);
 
             if (barrel != null)
             {
@@ -89,7 +90,7 @@ public class Turret : Building
 
     private bool IsTurretCloseToTargetRotation()
     {
-        return Quaternion.Angle(transform.rotation, Quaternion.LookRotation(target.position - transform.position, Vector3.up)) < TurretTargetRotationThreshold;
+        return Quaternion.Angle(modelToRotate.transform.rotation, Quaternion.LookRotation(modelToRotate.transform.position - target.position, Vector3.up)) < TurretTargetRotationThreshold;
     }
 
     private void FindNearestEnemy()
@@ -121,7 +122,7 @@ public class Turret : Building
 
     private void Shoot()
     {
-        GameObject bullet = Instantiate(bulletPrefab, bulletSpawnPoint.position, bulletSpawnPoint.rotation);
+        GameObject bullet = Instantiate(bulletPrefab, bulletSpawnPoint.position, Quaternion.identity);
 
         Bullet bulletController = bullet.GetComponent<Bullet>();
         if (bulletController != null)
@@ -129,7 +130,7 @@ public class Turret : Building
             Rigidbody bulletRigidbody = bullet.GetComponent<Rigidbody>();
             if (bulletRigidbody != null)
             {
-                bulletRigidbody.AddForce(bulletSpawnPoint.forward * bulletForce, ForceMode.Impulse);
+                bulletRigidbody.AddForce(-bulletSpawnPoint.forward * bulletForce, ForceMode.Impulse);
             }
         }
 

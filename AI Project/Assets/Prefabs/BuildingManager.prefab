@@ -44,15 +44,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f94e019d61bc3f145a68c41165eb1dc1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  buildingPrefabs:
-  - {fileID: 6382283275177317963, guid: 1ff106accf8fd904e9c519fe82a14e34, type: 3}
-  - {fileID: 3100585088814125901, guid: 34824771d6e4eb348a099a37da7cc8e9, type: 3}
-  - {fileID: 8282636548440714995, guid: 293072eabbe97164d8e79b86e6fff2f9, type: 3}
-  buttons: []
-  buildingUI: {fileID: 0}
+  buildingInfos:
+  - prefab: {fileID: 6382283275177317963, guid: 1ff106accf8fd904e9c519fe82a14e34,
+      type: 3}
+    buildHeight: 0
+    button: {fileID: 0}
+  - prefab: {fileID: 3100585088814125901, guid: 34824771d6e4eb348a099a37da7cc8e9,
+      type: 3}
+    buildHeight: 1
+    button: {fileID: 0}
+  - prefab: {fileID: 8282636548440714995, guid: 293072eabbe97164d8e79b86e6fff2f9,
+      type: 3}
+    buildHeight: 0
+    button: {fileID: 0}
   groundLayer:
     serializedVersion: 2
     m_Bits: 64
-  buildHeight: 0.8
-  buildMode: 0
-  currentIndex: 0
+  collisionLayer:
+    serializedVersion: 2
+    m_Bits: 256
+  buildingUI: {fileID: 0}
+  canPlaceColor: {r: 0, g: 1, b: 0, a: 0.43137255}
+  cannotPlaceColor: {r: 1, g: 0, b: 0, a: 0.5176471}

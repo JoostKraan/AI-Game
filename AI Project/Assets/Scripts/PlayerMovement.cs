@@ -10,10 +10,13 @@ public class PlayerMovement : MonoBehaviour
 
     private Rigidbody rb;
 
+    public bool canShoot = true;
+
     void Start()
     {
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true; // Freeze rotation so the player doesn't tip over
+        canShoot = true;
     }
 
     void Update()
@@ -32,7 +35,7 @@ public class PlayerMovement : MonoBehaviour
         rb.AddForce(movement * speed);
 
         // Check for shooting input
-        if (Input.GetMouseButtonDown(0)) // Change to the appropriate mouse button (0 for left, 1 for right, 2 for middle)
+        if (Input.GetMouseButtonDown(0) && canShoot) // Change to the appropriate mouse button (0 for left, 1 for right, 2 for middle)
         {
             ShootProjectile();
         }
