@@ -1,4 +1,6 @@
+using System.Diagnostics;
 using UnityEngine;
+using System.Collections;
 
 [RequireComponent(typeof(Rigidbody))]
 public class PlayerMovement : MonoBehaviour
@@ -7,6 +9,13 @@ public class PlayerMovement : MonoBehaviour
     public GameObject projectilePrefab; // Assign your projectile prefab in the Unity Editor
     public float projectileOffset = 1.0f; // Adjust this to set the offset from the player's position
     public GameObject shootingDirectionReference; // Assign the GameObject whose forward direction you want to use
+    public float sprintSpeedMultiplier = 2f; // Adjust this to set the sprint speed multiplier
+    public float sprintDuration = 0.5f; // Adjust this to set the sprint duration in seconds
+    public float sprintCooldown = 2f; // Adjust this to set the sprint cooldown in seconds
+
+    private float originalSpeed; // Store the original speed before sprinting
+    private bool isSprinting = false; // Flag to track if the player is currently sprinting
+    private float lastSprintTime = 0f; // Record the time of the last sprint
 
     private Rigidbody rb;
 
@@ -25,14 +34,23 @@ public class PlayerMovement : MonoBehaviour
         float horizontalInput = Input.GetAxis("Horizontal");
         float verticalInput = Input.GetAxis("Vertical");
 
+        // Check for sprint input (only trigger once when Shift key is pressed and after cooldown)
+        if (Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.RightShift))
+        {
+            if (Time.time > lastSprintTime + sprintCooldown)
+            {
+                StartCoroutine(StartSprint());
+            }
+        }
+
         // Calculate movement direction based on arrow keys
         Vector3 movement = new Vector3(horizontalInput, 0f, verticalInput).normalized;
 
         // Rotate the player towards the mouse position
         RotateTowardsMouse();
 
-        // Apply force to the Rigidbody
-        rb.AddForce(movement * speed);
+        // Apply force to the Rigidbody with sprint multiplier if currently sprinting
+        rb.AddForce(movement * (isSprinting ? speed * sprintSpeedMultiplier : speed));
 
         // Check for shooting input
         if (Input.GetMouseButtonDown(0) && canShoot) // Change to the appropriate mouse button (0 for left, 1 for right, 2 for middle)
@@ -87,5 +105,29 @@ public class PlayerMovement : MonoBehaviour
         {
             projectileRb.AddForce(shootingDirection * 10f, ForceMode.Impulse); // Adjust the force as needed
         }
+       
+    }
+    IEnumerator StartSprint()
+    {
+        // Temporarily increase the speed for the specified sprint duration
+        isSprinting = true;
+        speed *= sprintSpeedMultiplier;
+
+        // Wait for the specified sprint duration
+        yield return new WaitForSeconds(sprintDuration);
+
+        // Record the time of the last sprint
+        lastSprintTime = Time.time;
+
+        // Restore the original speed
+        speed = originalSpeed;
+        isSprinting = false;
+    }
+
+    public float GetRemainingDashCooldown()
+    {
+        
+        float elapsedTime = Time.time - lastSprintTime;
+        return Mathf.Max(0f, sprintCooldown - elapsedTime);
     }
 }
