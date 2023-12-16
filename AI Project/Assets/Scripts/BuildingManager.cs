@@ -1,22 +1,42 @@
+using System.Linq;
+using System.Linq.Expressions;
 using UnityEngine;
 using UnityEngine.UI;
 
+[System.Serializable]
+public struct BuildingInfo
+{
+    public GameObject prefab;
+    public float buildHeight;
+    public Button button; // The UI button for this building
+    public Vector3 offset;
+}
+
 public class BuildingManager : MonoBehaviour
 {
-    public GameObject[] buildingPrefabs;  // The prefabs of possible selected objects
-    public Button[] buttons; // The buttons for UI
-    public GameObject buildingUI; // The UI for building selection
-    public LayerMask groundLayer; // The layer for any objects representing ground
+    public BuildingInfo[] buildingInfos; // The prefabs, build heights, and UI buttons of possible selected objects
+    public LayerMask groundLayer;
     public LayerMask collisionLayer;
-    public float buildHeight; // The height of the currently placed building
-    public bool buildMode; // If the game is currently in buildMode
-    public float currentIndex; // The current index for the building prefabs
+    public GameObject buildingUI;
+    public PlayerMovement player;
     private GameObject currentBuilding; // The currently placed building
     private bool isPlacing = false; // Flag to check if a building is currently being placed
+    private bool buildMode;
+    private int currentIndex = 0; // The current index for the buildingInfos array
+
+    // Variables for color management
+    private Color originalColor;
+    public Color canPlaceColor = Color.green;
+    public Color cannotPlaceColor = Color.red;
 
     private void Start()
     {
-        buildingUI.SetActive(false); // Hide building UI on start
+        foreach (var info in buildingInfos)
+        {
+            info.button.interactable = false;
+        }
+
+        buildingUI.SetActive(false);
     }
 
     void Update()
@@ -27,94 +47,204 @@ public class BuildingManager : MonoBehaviour
         {
             UpdateBuildingPosition();
             HandleRotationInput();
-            
-            if (currentBuilding.GetComponent<Building>() is Turret turret)
+
+            if (currentBuilding)
             {
-                turret.canShoot = false;
-            }
-            else if (currentBuilding.GetComponent<Building>() is Mine mine)
-            {
-                mine.canExplode = false;
+                if (CanPlaceBuilding())
+                {
+                    SetBuildingColor(canPlaceColor); // Change the color to green if it can be placed
+                }
+                else
+                {
+                    SetBuildingColor(cannotPlaceColor); // Change the color to red if it cannot be placed
+                }
+
+                if (currentBuilding.GetComponent<Building>() is Turret turret)
+                {
+                    turret.canShoot = false;
+                }
+                else if (currentBuilding.GetComponent<Building>() is Mine mine)
+                {
+                    mine.canExplode = false;
+                }
             }
         }
+        else
+        {
+            UpdatePreviewPosition();
+        }
+    }
+
+    void SetBuildingColor(Color color)
+    {
+        var renderers = currentBuilding.GetComponentsInChildren<Renderer>(true);
+
+        foreach (var renderer in renderers)
+        {
+            Material[] materials = renderer.sharedMaterials;
+            Material[] materialsCopy = new Material[materials.Length];
+
+            for (int i = 0; i < materials.Length; i++)
+            {
+                Material materialCopy = new Material(materials[i]); // Create a copy of the material
+                materialsCopy[i] = materialCopy;
+
+                if (materialCopy.HasProperty("_BaseColor"))
+                {
+                    materialCopy.SetColor("_BaseColor", color);
+                }
+            }
+
+            renderer.sharedMaterials = materialsCopy;
+        }
+    }
+
+    void CreatePreviewBuilding()
+    {
+        BuildingInfo currentBuildingInfo = buildingInfos[currentIndex];
+        currentBuilding = Instantiate(currentBuildingInfo.prefab);
+        currentBuilding.GetComponent<Collider>().isTrigger = true;
+        originalColor = GetOriginalColor(currentBuilding);
+        AdjustTransparency(currentBuilding, 0.5f);
+    }
+
+    Color GetOriginalColor(GameObject obj)
+    {
+        var renderer = obj.GetComponent<Renderer>();
+        if (renderer != null && renderer.sharedMaterial.HasProperty("_BaseColor"))
+        {
+            return renderer.sharedMaterial.GetColor("_BaseColor");
+        }
+        return Color.white; // Default color if no original color found
+    }
+
+    void AdjustTransparency(GameObject obj, float alpha)
+    {
+        var renderers = obj.GetComponentsInChildren<Renderer>(true);
+
+        foreach (var renderer in renderers)
+        {
+            Material[] materials = renderer.sharedMaterials;
+            Material[] materialsCopy = new Material[materials.Length];
+
+            for (int i = 0; i < materials.Length; i++)
+            {
+                Material materialCopy = new Material(materials[i]); // Create a copy of the material
+                materialsCopy[i] = materialCopy;
+
+                if (materialCopy.HasProperty("_BaseColor"))
+                {
+                    Color baseColor = materialCopy.GetColor("_BaseColor");
+                    baseColor.a = alpha;
+                    materialCopy.SetColor("_BaseColor", baseColor);
+                }
+            }
+
+            renderer.sharedMaterials = materialsCopy;
+        }
+    }
+
+    void UpdatePreviewPosition()
+    {
+        if (currentBuilding != null)
+        {
+            currentBuilding.SetActive(true);
+            Vector3 mousePosition = GetMousePositionOnGround();
+            currentBuilding.transform.position = SnapToGrid(mousePosition);
+        }
+    }
+
+    Vector3 GetMousePositionOnGround()
+    {
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hit;
+
+        if (Physics.Raycast(ray, out hit, Mathf.Infinity, groundLayer))
+        {
+            return hit.point;
+        }
+
+        return Vector3.zero;
     }
 
     void HandleInput()
     {
-        // Toggle build mode and show/hide building UI
         if (Input.GetKeyDown(KeyCode.F))
         {
-            buildMode = !buildMode;
-            buildingUI.SetActive(buildMode);
-
-            if (!buildMode)
-            {
-                DestroyPlacingBuilding();
-            }
-            else
-            {
-                currentIndex = 0;
-            }
+            ToggleBuildMode();
         }
 
         if (!buildMode) return;
 
-        // Left mouse button to place or confirm the building
-        if (Input.GetMouseButtonDown(0))
+        if (!isPlacing)
         {
-            if (!isPlacing)
+            if (Input.GetMouseButtonDown(0))
             {
                 StartPlacingBuilding();
             }
-            else
+
+            currentIndex = (int)Mathf.Clamp(currentIndex + Input.mouseScrollDelta.y, 0, buildingInfos.Length - 1);
+
+            foreach (var info in buildingInfos)
             {
-                if (CanPlaceBuilding())
+                info.button.interactable = false;
+            }
+
+            buildingInfos[currentIndex].button.interactable = true;
+
+            for (int i = 0; i < buildingInfos.Length; i++)
+            {
+                if (Input.GetKeyDown(KeyCode.Alpha1 + i))
                 {
-                    StopPlacingBuilding();
+                    currentIndex = i;
                 }
             }
         }
+        else
+        {
+            if (Input.GetMouseButtonDown(0) && CanPlaceBuilding())
+            {
+                StopPlacingBuilding();
+            }
 
-        // Cancel building placement on escape
-        if (Input.GetKeyDown(KeyCode.Escape))
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                DestroyPlacingBuilding();
+            }
+        }
+    }
+
+    void ToggleBuildMode()
+    {
+        buildMode = !buildMode;
+
+        buildingUI.SetActive(buildMode);
+
+        player.canShoot = !buildMode;
+
+        foreach (var info in buildingInfos)
+        {
+            info.button.interactable = buildMode;
+        }
+
+        if (!buildMode)
         {
             DestroyPlacingBuilding();
         }
+    }
 
-        // Change the current building prefab using the mouse scroll wheel
-        currentIndex += Input.mouseScrollDelta.y;
-        currentIndex = Mathf.Clamp(currentIndex, 0, buildingPrefabs.Length - 1);
-
-        // Update UI button interactivity based on the current index
-        foreach (var button in buttons)
-        {
-            button.interactable = false;
-        }
-
-        buttons[(int)currentIndex].interactable = true;
-        print(buttons[(int)currentIndex].interactable);
+    void StopPlacingBuilding()
+    {
+        SetBuildingColor(originalColor); // Return to the original color
+        currentBuilding.GetComponent<Collider>().isTrigger = false;
+        isPlacing = false;
+        currentBuilding = null;
     }
 
     void StartPlacingBuilding()
     {
         isPlacing = true;
-        currentBuilding = Instantiate(buildingPrefabs[(int)currentIndex]);
-    }
-
-    void StopPlacingBuilding()
-    {
-        isPlacing = false;
-
-        if (currentBuilding.GetComponent<Building>() is Turret turret)
-        {
-            turret.canShoot = true;
-        }
-        else if (currentBuilding.GetComponent<Building>() is Mine mine)
-        {
-            mine.canExplode = true;
-        }
-
-        currentBuilding = null;
+        CreatePreviewBuilding();
     }
 
     void DestroyPlacingBuilding()
@@ -124,30 +254,23 @@ public class BuildingManager : MonoBehaviour
         currentBuilding = null;
     }
 
-    // Snap a position to a grid
-    Vector3 SnapToGrid(Vector3 position)
-    {
-        float gridSize = 1.0f; // Adjust this value based on your grid size
-
-        float x = Mathf.Floor(position.x / gridSize) * gridSize + gridSize / 2.0f;
-        float y = position.y;
-        float z = Mathf.Floor(position.z / gridSize) * gridSize + gridSize / 2.0f;
-
-        return new Vector3(x, y, z);
-    }
-
-    // Check if the building can be placed at the current position
     bool CanPlaceBuilding()
     {
         Collider collider = currentBuilding.GetComponent<Collider>();
-        Collider[] colliders = Physics.OverlapBox(collider.bounds.center, collider.bounds.extents / 2, currentBuilding.transform.rotation, collisionLayer);
 
-        foreach (Collider collider2 in colliders)
+        // Use an axis-aligned bounding box that encompasses the entire rotated object
+        Bounds bounds = collider.bounds;
+
+        Vector3 center = bounds.center;
+        Vector3 halfExtents = bounds.extents;
+
+        Collider[] colliders = Physics.OverlapBox(center, halfExtents, Quaternion.identity, collisionLayer);
+
+        for (int i = 0; i < colliders.Length; i++)
         {
-            // Adjust this condition based on your specific requirements
-            if (collider2.gameObject != currentBuilding)
+            if (colliders[i].gameObject != currentBuilding)
             {
-                Debug.Log("Cannot place building: overlapping with " + collider2.gameObject.name);
+                Debug.LogWarning(colliders[i].gameObject.name);
                 return false;
             }
         }
@@ -155,26 +278,29 @@ public class BuildingManager : MonoBehaviour
         return true;
     }
 
-    // Update the position of the building being placed based on mouse position
     void UpdateBuildingPosition()
     {
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        RaycastHit hit;
-
-        if (Physics.Raycast(ray, out hit, Mathf.Infinity, groundLayer))
+        if (currentBuilding != null)
         {
-            Vector3 snappedPosition = SnapToGrid(hit.point);
-            snappedPosition.y += buildHeight;
-            currentBuilding.transform.position = snappedPosition;
+            Vector3 mousePosition = GetMousePositionOnGround();
+            currentBuilding.transform.position = SnapToGrid(mousePosition);
         }
     }
 
-    // Rotate the building when 'R' key is pressed
     void HandleRotationInput()
     {
         if (Input.GetKeyDown(KeyCode.R))
         {
             currentBuilding.transform.Rotate(Vector3.up, 90f);
         }
+    }
+
+    Vector3 SnapToGrid(Vector3 position)
+    {
+        float gridSize = 1.0f;
+        float x = Mathf.Floor(position.x / gridSize) * gridSize + gridSize / 2.0f + buildingInfos[currentIndex].offset.x;
+        float y = position.y + buildingInfos[currentIndex].buildHeight;
+        float z = Mathf.Floor(position.z / gridSize) * gridSize + gridSize / 2.0f + buildingInfos[currentIndex].offset.z;
+        return new Vector3(x, y, z);
     }
 }
