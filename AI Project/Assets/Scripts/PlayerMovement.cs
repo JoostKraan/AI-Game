@@ -24,8 +24,11 @@ public class PlayerMovement : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody>();
-        rb.freezeRotation = true; // Freeze rotation so the player doesn't tip over
+        rb.freezeRotation = true;
         canShoot = true;
+
+        // Assign the initial speed to originalSpeed
+        originalSpeed = speed;
     }
 
     void Update()
@@ -105,7 +108,7 @@ public class PlayerMovement : MonoBehaviour
         {
             projectileRb.AddForce(shootingDirection * 10f, ForceMode.Impulse); // Adjust the force as needed
         }
-       
+
     }
     IEnumerator StartSprint()
     {
@@ -124,9 +127,10 @@ public class PlayerMovement : MonoBehaviour
         isSprinting = false;
     }
 
+
     public float GetRemainingDashCooldown()
     {
-        
+
         float elapsedTime = Time.time - lastSprintTime;
         return Mathf.Max(0f, sprintCooldown - elapsedTime);
     }

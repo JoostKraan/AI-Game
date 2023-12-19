@@ -21,7 +21,7 @@ public class BuildingManager : MonoBehaviour
     public PlayerMovement player;
     private GameObject currentBuilding; // The currently placed building
     private bool isPlacing = false; // Flag to check if a building is currently being placed
-    private bool buildMode;
+    public bool buildMode;
     private int currentIndex = 0; // The current index for the buildingInfos array
 
     // Variables for color management
