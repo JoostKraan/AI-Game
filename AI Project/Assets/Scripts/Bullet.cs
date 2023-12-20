@@ -11,6 +11,12 @@ public class Bullet : MonoBehaviour
         // Destroy the bullet after a specified lifetime
         Destroy(gameObject, lifetime);
     }
+
+    private void Update()
+    {
+        transform.rotation = Quaternion.LookRotation(GetComponent<Rigidbody>().velocity);
+    }
+
     void OnCollisionEnter(Collision collision)
     {
         // Check if the object the bullet collided with has a ZombieHealth script
