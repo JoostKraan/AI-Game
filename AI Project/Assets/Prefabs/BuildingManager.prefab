@@ -49,20 +49,28 @@ MonoBehaviour:
       type: 3}
     buildHeight: 0
     button: {fileID: 0}
+    offset: {x: -3, y: 0, z: 0}
+    buildCost: 5
   - prefab: {fileID: 3100585088814125901, guid: 34824771d6e4eb348a099a37da7cc8e9,
       type: 3}
     buildHeight: 1
     button: {fileID: 0}
+    offset: {x: 0, y: 0, z: 0}
+    buildCost: 50
   - prefab: {fileID: 8282636548440714995, guid: 293072eabbe97164d8e79b86e6fff2f9,
       type: 3}
     buildHeight: 0
     button: {fileID: 0}
+    offset: {x: 0, y: 0, z: 0}
+    buildCost: 15
   groundLayer:
     serializedVersion: 2
     m_Bits: 64
   collisionLayer:
     serializedVersion: 2
-    m_Bits: 256
+    m_Bits: 0
   buildingUI: {fileID: 0}
+  player: {fileID: 0}
+  maxBuildDistance: 5
   canPlaceColor: {r: 0, g: 1, b: 0, a: 0.43137255}
   cannotPlaceColor: {r: 1, g: 0, b: 0, a: 0.5176471}
