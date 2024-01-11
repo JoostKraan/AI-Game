@@ -1,3 +1,4 @@
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -22,7 +23,8 @@ public class BuildingManager : MonoBehaviour
     private bool isPlacing = false; // Flag to check if a building is currently being placed
     private bool buildMode;
     private int currentIndex = 0; // The current index for the buildingInfos array
-    public int playerPoints = 100; // Initial points for the player
+    private int playerPoints = 100; // Initial points for the player
+    public float maxBuildDistance = 10f; // Maximum distance from the player to allow building
 
     // Variables for color management
     private Color originalColor;
@@ -204,7 +206,7 @@ public class BuildingManager : MonoBehaviour
         {
             if (Input.GetMouseButtonDown(0) && CanPlaceBuilding())
             {
-                BuildBuilding();
+                StopPlacingBuilding();
             }
 
             if (Input.GetKeyDown(KeyCode.Escape))
@@ -233,33 +235,6 @@ public class BuildingManager : MonoBehaviour
         }
     }
 
-    void BuildBuilding()
-    {
-        if (CanPlaceBuilding())
-        {
-            BuildingInfo currentBuildingInfo = buildingInfos[currentIndex];
-
-            // Check if the player has enough points to build
-            if (playerPoints >= currentBuildingInfo.buildCost)
-            {
-                playerPoints -= currentBuildingInfo.buildCost; // Deduct points
-                // Instantiate the building at the preview position
-                Instantiate(currentBuildingInfo.prefab, currentBuilding.transform.position, currentBuilding.transform.rotation);
-            }
-            else
-            {
-                Debug.Log("Not enough points to build!");
-                // Optionally, provide feedback to the player (e.g., show a message).
-            }
-
-            // Clean up the preview building
-            SetBuildingColor(originalColor);
-            currentBuilding.GetComponent<Collider>().isTrigger = false;
-            isPlacing = false;
-            Destroy(currentBuilding);
-        }
-    }
-
     void StopPlacingBuilding()
     {
         SetBuildingColor(originalColor); // Return to the original color
@@ -276,8 +251,6 @@ public class BuildingManager : MonoBehaviour
 
     void DestroyPlacingBuilding()
     {
-        SetBuildingColor(originalColor); // Return to the original color
-        currentBuilding.GetComponent<Collider>().isTrigger = false;
         Destroy(currentBuilding);
         isPlacing = false;
         currentBuilding = null;
@@ -293,18 +266,27 @@ public class BuildingManager : MonoBehaviour
         Vector3 center = bounds.center;
         Vector3 halfExtents = bounds.extents;
 
-        Collider[] colliders = Physics.OverlapBox(center, halfExtents, Quaternion.identity, collisionLayer);
+        // Check the distance between the player and the building
+        float distanceToPlayer = Vector3.Distance(player.transform.position, center);
 
-        for (int i = 0; i < colliders.Length; i++)
+        // Check if the distance is within the allowed range
+        if (distanceToPlayer <= maxBuildDistance)
         {
-            if (colliders[i].gameObject != currentBuilding)
+            Collider[] colliders = Physics.OverlapBox(center, halfExtents, Quaternion.identity, collisionLayer);
+
+            for (int i = 0; i < colliders.Length; i++)
             {
-                Debug.LogWarning(colliders[i].gameObject.name);
-                return false;
+                if (colliders[i].gameObject != currentBuilding)
+                {
+                    Debug.LogWarning(colliders[i].gameObject.name);
+                    return false;
+                }
             }
+
+            return true;
         }
 
-        return true;
+        return false;
     }
 
     void UpdateBuildingPosition()
