@@ -1,5 +1,3 @@
-using System.Linq;
-using System.Linq.Expressions;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,6 +8,7 @@ public struct BuildingInfo
     public float buildHeight;
     public Button button; // The UI button for this building
     public Vector3 offset;
+    public int buildCost; // The cost in points to build this structure
 }
 
 public class BuildingManager : MonoBehaviour
@@ -23,6 +22,7 @@ public class BuildingManager : MonoBehaviour
     private bool isPlacing = false; // Flag to check if a building is currently being placed
     private bool buildMode;
     private int currentIndex = 0; // The current index for the buildingInfos array
+    public int playerPoints = 100; // Initial points for the player
 
     // Variables for color management
     private Color originalColor;
@@ -204,7 +204,7 @@ public class BuildingManager : MonoBehaviour
         {
             if (Input.GetMouseButtonDown(0) && CanPlaceBuilding())
             {
-                StopPlacingBuilding();
+                BuildBuilding();
             }
 
             if (Input.GetKeyDown(KeyCode.Escape))
@@ -233,6 +233,33 @@ public class BuildingManager : MonoBehaviour
         }
     }
 
+    void BuildBuilding()
+    {
+        if (CanPlaceBuilding())
+        {
+            BuildingInfo currentBuildingInfo = buildingInfos[currentIndex];
+
+            // Check if the player has enough points to build
+            if (playerPoints >= currentBuildingInfo.buildCost)
+            {
+                playerPoints -= currentBuildingInfo.buildCost; // Deduct points
+                // Instantiate the building at the preview position
+                Instantiate(currentBuildingInfo.prefab, currentBuilding.transform.position, currentBuilding.transform.rotation);
+            }
+            else
+            {
+                Debug.Log("Not enough points to build!");
+                // Optionally, provide feedback to the player (e.g., show a message).
+            }
+
+            // Clean up the preview building
+            SetBuildingColor(originalColor);
+            currentBuilding.GetComponent<Collider>().isTrigger = false;
+            isPlacing = false;
+            Destroy(currentBuilding);
+        }
+    }
+
     void StopPlacingBuilding()
     {
         SetBuildingColor(originalColor); // Return to the original color
@@ -249,6 +276,8 @@ public class BuildingManager : MonoBehaviour
 
     void DestroyPlacingBuilding()
     {
+        SetBuildingColor(originalColor); // Return to the original color
+        currentBuilding.GetComponent<Collider>().isTrigger = false;
         Destroy(currentBuilding);
         isPlacing = false;
         currentBuilding = null;

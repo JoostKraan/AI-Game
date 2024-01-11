@@ -4981,6 +4981,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4888581912089268487}
   - component: {fileID: 122032284959273590}
+  - component: {fileID: 7972986507433030784}
   m_Layer: 8
   m_Name: Turret
   m_TagString: Untagged
@@ -5035,6 +5036,28 @@ MonoBehaviour:
   TurretTargetRotationThreshold: 10
   BarrelZRotationIncrement: 50
   canShoot: 1
+  durability: 50
+--- !u!65 &7972986507433030784
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3100585088814125901}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1.6731305, y: 1.9262294, z: 1.8175169}
+  m_Center: {x: 0.074970484, y: -0.21699148, z: 0.20801717}
 --- !u!1 &6283455640190976274
 GameObject:
   m_ObjectHideFlags: 0
@@ -5146,7 +5169,7 @@ Transform:
   m_GameObject: {fileID: 6550998608737801439}
   serializedVersion: 2
   m_LocalRotation: {x: -0.0000015497205, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.002, y: -0.012, z: -1.209}
+  m_LocalPosition: {x: -0.19, y: -0.01, z: -3.69}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -5164,7 +5187,7 @@ GameObject:
   - component: {fileID: 566757828653083044}
   - component: {fileID: 5123546764325547822}
   m_Layer: 0
-  m_Name: SentryTurretJoined
+  m_Name: Model
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5180,8 +5203,8 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: -1.0699996, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 6290655400743051417}
   m_Father: {fileID: 4888581912089268487}
