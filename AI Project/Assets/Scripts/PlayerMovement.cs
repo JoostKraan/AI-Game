@@ -79,7 +79,6 @@ public class PlayerMovement : MonoBehaviour
 
         // Apply rotation to the projectile to match the specified shooting direction
         //float angle = Mathf.Atan2(shootingDirection.y, shootingDirection.x) * Mathf.Rad2Deg;
-        projectile.transform.rotation = Quaternion.LookRotation(projectile.GetComponent<Rigidbody>().velocity);
 
         // Add force to the projectile in the direction of the specified shooting direction
         Rigidbody projectileRb = projectile.GetComponent<Rigidbody>();
