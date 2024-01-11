@@ -14,7 +14,9 @@ public class Bullet : MonoBehaviour
 
     private void Update()
     {
-        transform.rotation = Quaternion.LookRotation(GetComponent<Rigidbody>().velocity);
+        Vector3 velocity = GetComponent<Rigidbody>().velocity;
+        velocity.y += 90f;
+        transform.rotation = Quaternion.Euler(velocity);
     }
 
     void OnCollisionEnter(Collision collision)
