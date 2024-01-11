@@ -10,6 +10,7 @@ public class WaveManager : MonoBehaviour
     public TextMeshProUGUI waveCountText, waveTimerText;
     public ParticleSystem startWaveParticle; // Particle System voor het starten van de wave
     public ParticleSystem enemySpawnParticle; // Nieuwe Particle System voor het spawnen van vijanden
+    public Animator crystalAnimator;
 
     private int currentWave = 0;
 
@@ -18,20 +19,32 @@ public class WaveManager : MonoBehaviour
         StartCoroutine(InitialCountdown());
     }
 
-    IEnumerator InitialCountdown()
-    {
-        float initialCountdownTimer = 5f;
-
-        // Start de Particle System bij het begin van de countdown
-        if (startWaveParticle != null)
+	private void Update()
+	{
+        if (GameObject.FindGameObjectsWithTag("Zombie").Length == 0)
         {
             startWaveParticle.Play();
+            crystalAnimator.SetBool("SpawnEnemies", true);
+            waveTimerText.enabled = true;
         }
+        else if (GameObject.FindGameObjectsWithTag("Zombie").Length != 0)
+        {
+            startWaveParticle.Stop();
+            crystalAnimator.SetBool("SpawnEnemies", false);
+            waveTimerText.enabled = false;
+        }
+
+        waveCountText.text = "Wave: " + (currentWave + 1);
+    }
+
+	IEnumerator InitialCountdown()
+    {
+        float initialCountdownTimer = 5f;
 
         while (initialCountdownTimer > 0)
         {
             waveTimerText.enabled = true;
-            waveTimerText.text = "Next Wave in: " + initialCountdownTimer.ToString(); // Toon de resterende tijd met één decimaal
+            waveTimerText.text = initialCountdownTimer.ToString(); // Toon de resterende tijd met één decimaal
             yield return new WaitForSeconds(1f);
             initialCountdownTimer -= 1f;
         }
@@ -55,6 +68,8 @@ public class WaveManager : MonoBehaviour
         {
             GameObject enemyToSpawn = enemyPrefab;
 
+            enemySpawnParticle.Play();
+
             // Check voor specialEnemyPrefab vanaf wave 10
             if (currentWave >= 10)
             {
@@ -74,63 +89,32 @@ public class WaveManager : MonoBehaviour
             // Instantieer de vijand
             GameObject spawnedEnemy = Instantiate(enemyToSpawn, spawnPosition, Quaternion.identity);
 
-            // Activeer de Particle System voor het spawnen van vijanden elke keer als een vijand verschijnt
-            if (enemySpawnParticle != null)
-            {
-                ParticleSystem particle = Instantiate(enemySpawnParticle, spawnedEnemy.transform.position, Quaternion.identity);
-                Destroy(particle.gameObject, particle.main.duration);
-            }
-
-            UpdateWaveCountText();
-
             // Wacht met spawnen tot de volgende seconde
             yield return new WaitForSeconds(1f);
         }
     }
 
+
     IEnumerator SpawnWaves()
     {
-        while (true) // Oneindige loop
+        while (true) // Infinite loop
         {
-            UpdateWaveCountText();
-            waveTimerText.text = "Next Wave in: " + timeBetweenWaves.ToString();
+            waveTimerText.text = timeBetweenWaves.ToString();
             Debug.Log("Wave " + (currentWave + 1) + " started!");
 
-            // Spawn de zombies voor deze golf
+            // Spawn the zombies for this wave
             StartCoroutine(SpawnEnemiesWithDelay());
 
-            // Wacht totdat alle vijanden zijn verslagen
+            // Wait until all enemies are defeated
             yield return new WaitUntil(() => GameObject.FindGameObjectsWithTag("Zombie").Length == 0);
-
-            // Activeer de Particle System voor het starten van de wave aan het einde van elke wave
-            if (startWaveParticle != null)
-            {
-                startWaveParticle.Play();
-            }
-
-            waveTimerText.enabled = false;
-
-            // Stop de Particle System voor het starten van de wave wanneer de countdown voor de volgende wave begint
-            if (startWaveParticle != null)
-            {
-                startWaveParticle.Stop();
-            }
 
             currentWave++;
 
-            // Wacht op de tussenliggende timer tussen golven
+            // Call InitialCountdown every time a wave is finished
+            StartCoroutine(InitialCountdown());
+
+            // Wait for the time between waves
             yield return new WaitForSeconds(timeBetweenWaves);
-
-            // Verplaats deze regel buiten de inner loop om te voorkomen dat de tekst wordt uitgeschakeld voordat de volgende wave begint
-            if (timeBetweenWaves <= 0) waveTimerText.enabled = false;
-        }
-    }
-
-    void UpdateWaveCountText()
-    {
-        if (waveCountText != null)
-        {
-            waveCountText.text = "Wave: " + (currentWave + 1);
         }
     }
 }
