@@ -5035,7 +5035,7 @@ MonoBehaviour:
   TurretRotationRandomness: 10
   TurretTargetRotationThreshold: 10
   BarrelZRotationIncrement: 50
-  canShoot: 1
+  canShoot: 0
   durability: 50
 --- !u!65 &7972986507433030784
 BoxCollider:

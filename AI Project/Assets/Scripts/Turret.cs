@@ -27,7 +27,7 @@ public class Turret : Building
     public float TurretTargetRotationThreshold = 50.0f;
     public float BarrelZRotationIncrement = 50f;
 
-    public bool canShoot;
+    public bool canShoot { get; set; }
 
     public int durability = 3; // Adjust the starting durability as needed
 
@@ -41,6 +41,8 @@ public class Turret : Building
 
     private void Update()
     {
+        print(canShoot);
+
         if (!canShoot) return;
 
         if (target != null && Vector3.Distance(transform.position, target.position) <= shootingRange)
