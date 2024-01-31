@@ -1,4 +1,3 @@
-
 using UnityEngine;
 
 public class Bullet : MonoBehaviour
@@ -6,6 +5,14 @@ public class Bullet : MonoBehaviour
     public float lifetime = 10f; // Adjust this to set the lifetime of the bullet
     public int damage = 50;
     public GameObject damageNumberPrefab;
+
+    private Rigidbody rb;
+
+    private void Awake()
+    {
+        rb = GetComponent<Rigidbody>();
+    }
+
     void Start()
     {
         // Destroy the bullet after a specified lifetime
@@ -14,9 +21,7 @@ public class Bullet : MonoBehaviour
 
     private void Update()
     {
-        Vector3 velocity = GetComponent<Rigidbody>().velocity;
-        velocity.y += 90f;
-        transform.rotation = Quaternion.Euler(velocity);
+        transform.forward = rb.velocity;
     }
 
     void OnCollisionEnter(Collision collision)
