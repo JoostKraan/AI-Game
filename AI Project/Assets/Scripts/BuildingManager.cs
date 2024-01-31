@@ -251,6 +251,7 @@ public class BuildingManager : MonoBehaviour
         }
         else if (currentBuilding.TryGetComponent(out Mine mine))
         {
+            mine.GetComponent<SphereCollider>().isTrigger = true;
             mine.canExplode = true;
         }
 

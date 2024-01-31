@@ -41,8 +41,6 @@ public class Turret : Building
 
     private void Update()
     {
-        print(canShoot);
-
         if (!canShoot) return;
 
         if (target != null && Vector3.Distance(transform.position, target.position) <= shootingRange)
@@ -135,17 +133,20 @@ public class Turret : Building
 
     private void Shoot()
     {
-        GameObject bullet = Instantiate(bulletPrefab, bulletSpawnPoint.position, Quaternion.identity);
+        GameObject bullet = Instantiate(bulletPrefab, bulletSpawnPoint.position, bulletPrefab.transform.rotation);
+        bullet.transform.forward = bullet.GetComponent<Rigidbody>().velocity;
 
         Bullet bulletController = bullet.GetComponent<Bullet>();
         if (bulletController != null)
         {
             Rigidbody bulletRigidbody = bullet.GetComponent<Rigidbody>();
+
             if (bulletRigidbody != null)
             {
                 bulletRigidbody.AddForce(-bulletSpawnPoint.forward * bulletForce, ForceMode.Impulse);
             }
         }
+
 
         if (audioSource != null && shootSound != null)
         {

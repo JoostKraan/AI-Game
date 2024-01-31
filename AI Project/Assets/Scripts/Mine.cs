@@ -15,9 +15,9 @@ public class Mine : Building
     public AudioClip fastBeepClip;
     public AudioClip explosionClip;
 
-    private bool exploded = false;
+    public bool exploded = false;
     public bool canExplode;
-
+    
     protected override void Start()
     {
         base.Start();
@@ -87,9 +87,8 @@ public class Mine : Building
 
     void Explode()
     {
-        print("boom 1");
         if (exploded) return; // Ensure the mine only explodes once
-        print("boom");
+
         exploded = true;
 
         // Stop blinking and hide the mesh
@@ -126,7 +125,7 @@ public class Mine : Building
                 ZombieHealth enemyHealth = hit.GetComponent<ZombieHealth>();
                 if (enemyHealth != null)
                 {
-                    enemyHealth.currentHealth -= damage;
+                    enemyHealth.TakeDamage(damage);
                 }
             }
         }

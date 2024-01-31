@@ -13,6 +13,7 @@ public class PlayerMovement : MonoBehaviour
     public float sprintDuration = 0.5f; // Adjust this to set the sprint duration in seconds
     public float sprintCooldown = 2f; // Adjust this to set the sprint cooldown in 
     public float shootingCooldown = 0.5f; // Adjust this to set the shooting cooldown in seconds
+    public float shootingForce = 100f; // Adjust this to set the force used for shooting the bullet in 
 
 
     private float originalSpeed; // Store the original speed before sprinting
@@ -36,8 +37,8 @@ public class PlayerMovement : MonoBehaviour
     void Update()
     {
         // Get input from arrow keys
-        float horizontalInput = Input.GetAxis("Horizontal");
-        float verticalInput = Input.GetAxis("Vertical");
+        float horizontalInput = Input.GetAxisRaw("Horizontal");
+        float verticalInput = Input.GetAxisRaw("Vertical");
 
         // Check for sprint input (only trigger once when Shift key is pressed and after cooldown)
         if (Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.RightShift))
@@ -107,7 +108,7 @@ public class PlayerMovement : MonoBehaviour
         Rigidbody projectileRb = projectile.GetComponent<Rigidbody>();
         if (projectileRb != null)
         {
-            projectileRb.AddForce(shootingDirection * 10f, ForceMode.Impulse); // Adjust the force as needed
+            projectileRb.AddForce(shootingDirection * shootingForce, ForceMode.Impulse); // Adjust the force as needed
         }
 
     }
