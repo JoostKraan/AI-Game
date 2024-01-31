@@ -1,5 +1,4 @@
 using System.Linq;
-using System.Linq.Expressions;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,6 +9,7 @@ public struct BuildingInfo
     public float buildHeight;
     public Button button; // The UI button for this building
     public Vector3 offset;
+    public int buildCost; // The cost in points to build this structure
 }
 
 public class BuildingManager : MonoBehaviour
@@ -23,6 +23,8 @@ public class BuildingManager : MonoBehaviour
     private bool isPlacing = false; // Flag to check if a building is currently being placed
     public bool buildMode;
     private int currentIndex = 0; // The current index for the buildingInfos array
+    private int playerPoints = 100; // Initial points for the player
+    public float maxBuildDistance = 10f; // Maximum distance from the player to allow building
 
     // Variables for color management
     private Color originalColor;
@@ -264,18 +266,27 @@ public class BuildingManager : MonoBehaviour
         Vector3 center = bounds.center;
         Vector3 halfExtents = bounds.extents;
 
-        Collider[] colliders = Physics.OverlapBox(center, halfExtents, Quaternion.identity, collisionLayer);
+        // Check the distance between the player and the building
+        float distanceToPlayer = Vector3.Distance(player.transform.position, center);
 
-        for (int i = 0; i < colliders.Length; i++)
+        // Check if the distance is within the allowed range
+        if (distanceToPlayer <= maxBuildDistance)
         {
-            if (colliders[i].gameObject != currentBuilding)
+            Collider[] colliders = Physics.OverlapBox(center, halfExtents, Quaternion.identity, collisionLayer);
+
+            for (int i = 0; i < colliders.Length; i++)
             {
-                Debug.LogWarning(colliders[i].gameObject.name);
-                return false;
+                if (colliders[i].gameObject != currentBuilding)
+                {
+                    Debug.LogWarning(colliders[i].gameObject.name);
+                    return false;
+                }
             }
+
+            return true;
         }
 
-        return true;
+        return false;
     }
 
     void UpdateBuildingPosition()

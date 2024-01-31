@@ -10,6 +10,7 @@ public class ZombieController : MonoBehaviour
     private Transform target;
     private float timer = 0f;
     public bool bruteZombie = false;
+    public int zombieDamage = 5, bruteDamage = 10;
 
     void Start()
     {
@@ -75,8 +76,8 @@ public class ZombieController : MonoBehaviour
 
     void DamageCore()
     {
-        if(bruteZombie) CoreHealth.coreStaticHealth -= 20;
-        else CoreHealth.coreStaticHealth -= 5;
+        if(bruteZombie) CoreHealth.coreStaticHealth -= bruteDamage;
+        else CoreHealth.coreStaticHealth -= zombieDamage;
         Debug.Log("De Core is beschadigd!");
     }
 }

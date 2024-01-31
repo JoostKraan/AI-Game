@@ -29,6 +29,8 @@ public class Turret : Building
 
     public bool canShoot;
 
+    public int durability = 3; // Adjust the starting durability as needed
+
     protected override void Start()
     {
         base.Start();
@@ -48,6 +50,15 @@ public class Turret : Building
             if (IsTurretCloseToTargetRotation() && Time.time - lastShotTime >= shootingCooldown)
             {
                 Shoot();
+
+                // Decrease durability
+                durability--;
+
+                // Check if durability reached 0 and destroy the turret
+                if (durability <= 0)
+                {
+                    DestroyTurret();
+                }
             }
         }
         else
@@ -145,5 +156,11 @@ public class Turret : Building
         }
 
         lastShotTime = Time.time;
+    }
+
+    private void DestroyTurret()
+    {
+        // Perform any cleanup or destruction logic here
+        Destroy(gameObject);
     }
 }
