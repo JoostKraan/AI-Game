@@ -11,7 +11,9 @@ public class PlayerMovement : MonoBehaviour
     public GameObject shootingDirectionReference; // Assign the GameObject whose forward direction you want to use
     public float sprintSpeedMultiplier = 2f; // Adjust this to set the sprint speed multiplier
     public float sprintDuration = 0.5f; // Adjust this to set the sprint duration in seconds
-    public float sprintCooldown = 2f; // Adjust this to set the sprint cooldown in seconds
+    public float sprintCooldown = 2f; // Adjust this to set the sprint cooldown in 
+    public float shootingCooldown = 0.5f; // Adjust this to set the shooting cooldown in seconds
+
 
     private float originalSpeed; // Store the original speed before sprinting
     private bool isSprinting = false; // Flag to track if the player is currently sprinting
@@ -56,9 +58,9 @@ public class PlayerMovement : MonoBehaviour
         rb.AddForce(movement * (isSprinting ? speed * sprintSpeedMultiplier : speed));
 
         // Check for shooting input
-        if (Input.GetMouseButtonDown(0) && canShoot) // Change to the appropriate mouse button (0 for left, 1 for right, 2 for middle)
+        if (Input.GetMouseButton(0) && canShoot)
         {
-            ShootProjectile();
+            StartCoroutine(ShootWithCooldown());
         }
     }
 
@@ -108,6 +110,19 @@ public class PlayerMovement : MonoBehaviour
             projectileRb.AddForce(shootingDirection * 10f, ForceMode.Impulse); // Adjust the force as needed
         }
 
+    }
+    IEnumerator ShootWithCooldown()
+    {
+        if (canShoot)
+        {
+            ShootProjectile();
+            canShoot = false;
+
+            // Wait for the specified shooting cooldown
+            yield return new WaitForSeconds(shootingCooldown);
+
+            canShoot = true;
+        }
     }
     IEnumerator StartSprint()
     {
