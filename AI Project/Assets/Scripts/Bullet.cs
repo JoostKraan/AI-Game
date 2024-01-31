@@ -16,6 +16,7 @@ public class Bullet : MonoBehaviour
     void Start()
     {
         // Destroy the bullet after a specified lifetime
+        transform.forward = rb.velocity;
         Destroy(gameObject, lifetime);
     }
 
