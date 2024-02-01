@@ -1,11 +1,16 @@
 using UnityEngine;
+using System.Collections;
 using TMPro;
 
 public class DamageNumber : MonoBehaviour
 {
     public float moveSpeed = 2f;
     public float fadeTime = 1f;
-    public TextMeshProUGUI damageText; 
+    public float destroyTime = 2f; // Adjust this to set the time before the parent object is destroyed
+    public TextMeshProUGUI damageText;
+
+    private float currentDestroyTimer;
+
     void Start()
     {
         damageText = GetComponent<TextMeshProUGUI>();  // Assign damageText before checking if it is null
@@ -15,12 +20,14 @@ public class DamageNumber : MonoBehaviour
             Debug.LogError("TextMeshPro component not found on the DamageNumber GameObject.");
         }
 
-        Destroy(gameObject, fadeTime);
+        StartCoroutine(DestroyAfterTimer());
     }
+
     void Update()
     {
         MoveAndFade();
     }
+
     void MoveAndFade()
     {
         if (damageText != null)
@@ -30,8 +37,17 @@ public class DamageNumber : MonoBehaviour
         }
     }
 
+    IEnumerator DestroyAfterTimer()
+    {
+        yield return new WaitForSeconds(destroyTime);
+        if (transform.parent != null)
+        {
+            Destroy(transform.parent.gameObject);
+        }
+    }
+
     public void SetDamageText(int damage)
     {
-            damageText.text = damage.ToString();
+        damageText.text = damage.ToString();
     }
 }
