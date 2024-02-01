@@ -159,7 +159,7 @@ MonoBehaviour:
   sprintDuration: 0.5
   sprintCooldown: 2
   shootingCooldown: 0.1
-  shootingForce: 30
+  shootingForce: 50
   canShoot: 0
 --- !u!1 &2593130107580066604
 GameObject:
@@ -273,9 +273,9 @@ Transform:
   m_GameObject: {fileID: 2676190868028912327}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0.008551507, z: -0, w: -0.9999635}
-  m_LocalPosition: {x: 1.165, y: -0.86, z: -0.081}
-  m_LocalScale: {x: 0.42, y: 0.26011452, z: 0.6159163}
-  m_ConstrainProportionsScale: 1
+  m_LocalPosition: {x: 2.03, y: -0.065, z: -0.1}
+  m_LocalScale: {x: 2.39, y: 0.43, z: 0.67}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 8786978062828860209}
   m_LocalEulerAnglesHint: {x: 0, y: -359.02, z: 0}
