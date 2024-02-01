@@ -66,7 +66,7 @@ MeshRenderer:
   m_RenderingLayerMask: 257
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 73c176f402d2c2f4d929aa5da7585d17, type: 2}
+  - {fileID: 272862264464909826, guid: f7d28b525c6b07c4aa94e4677e5bd239, type: 3}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -146,8 +146,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   coreTag: Core
-  damageInterval: 6
-  damageRange: 3
+  damageInterval: 3
+  damageRange: 10
   bruteZombie: 1
   zombieDamage: 5
   bruteDamage: 10

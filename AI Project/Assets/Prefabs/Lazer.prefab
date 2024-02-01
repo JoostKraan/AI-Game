@@ -120,7 +120,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lifetime: 10
-  damage: 15
+  damage: 20
   damageNumberPrefab: {fileID: 1217283082179851273, guid: d26fdc967e06dab44979ea3413797ced,
     type: 3}
 --- !u!54 &8564973505728758145

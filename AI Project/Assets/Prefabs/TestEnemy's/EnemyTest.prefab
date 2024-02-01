@@ -147,8 +147,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   coreTag: Core
-  damageInterval: 2
-  damageRange: 3
+  damageInterval: 1
+  damageRange: 10
   bruteZombie: 0
   zombieDamage: 5
   bruteDamage: 10

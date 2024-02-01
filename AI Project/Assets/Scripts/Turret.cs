@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Turret : Building
 {
@@ -26,6 +27,7 @@ public class Turret : Building
     public float TurretRotationRandomness = 10.0f;
     public float TurretTargetRotationThreshold = 50.0f;
     public float BarrelZRotationIncrement = 50f;
+    public Image healthBarFill;
 
     public bool canShoot { get; set; }
 
@@ -65,6 +67,15 @@ public class Turret : Building
         {
             FindNearestEnemy();
         }
+
+        UpdateHealthBar();
+    }
+
+    private void UpdateHealthBar()
+    {
+        float fillAmount = (float)durability / 50;
+        print(fillAmount);
+        healthBarFill.fillAmount = fillAmount;
     }
 
     private void RotateTowardsTarget()
