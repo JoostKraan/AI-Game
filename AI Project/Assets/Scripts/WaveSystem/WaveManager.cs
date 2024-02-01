@@ -1,26 +1,27 @@
-using System.Collections;
-using UnityEngine;
 using TMPro;
+using UnityEngine;
+using System.Collections;
 
 public class WaveManager : MonoBehaviour
 {
     public GameObject enemyPrefab;
     public GameObject specialEnemyPrefab;
     public float timeBetweenWaves = 5f;
-    public TextMeshProUGUI waveCountText, waveTimerText;
-    public ParticleSystem startWaveParticle; // Particle System voor het starten van de wave
-    public ParticleSystem enemySpawnParticle; // Nieuwe Particle System voor het spawnen van vijanden
+    public TextMeshProUGUI waveCountText, waveTimerText, moneyText;
+    public ParticleSystem startWaveParticle;
+    public ParticleSystem enemySpawnParticle;
     public Animator crystalAnimator;
 
     private int currentWave = 0;
+    private int money = 0;
 
     void Start()
     {
         StartCoroutine(InitialCountdown());
     }
 
-	private void Update()
-	{
+    private void Update()
+    {
         if (GameObject.FindGameObjectsWithTag("Zombie").Length == 0)
         {
             startWaveParticle.Play();
@@ -35,23 +36,23 @@ public class WaveManager : MonoBehaviour
         }
 
         waveCountText.text = "Wave: " + (currentWave + 1);
+        moneyText.text = "Money: " + money;
     }
 
-	IEnumerator InitialCountdown()
+    IEnumerator InitialCountdown()
     {
         float initialCountdownTimer = 5f;
 
         while (initialCountdownTimer > 0)
         {
             waveTimerText.enabled = true;
-            waveTimerText.text = initialCountdownTimer.ToString(); // Toon de resterende tijd met één decimaal
+            waveTimerText.text = initialCountdownTimer.ToString();
             yield return new WaitForSeconds(1f);
             initialCountdownTimer -= 1f;
         }
 
         waveTimerText.enabled = false;
 
-        // Stop de Particle System wanneer de countdown is voltooid
         if (startWaveParticle != null)
         {
             startWaveParticle.Stop();
@@ -70,7 +71,6 @@ public class WaveManager : MonoBehaviour
 
             enemySpawnParticle.Play();
 
-            // Check voor specialEnemyPrefab vanaf wave 10
             if (currentWave >= 10)
             {
                 float specialEnemySpawnChance = 0.2f;
@@ -80,24 +80,18 @@ public class WaveManager : MonoBehaviour
                 }
             }
 
-            // Genereer een willekeurige spawnpositie binnen de eenheidscirkel
             Vector2 randomCirclePosition = Random.insideUnitCircle;
-
-            // Pas de spawnpositie aan met de positie van de WaveManager
             Vector3 spawnPosition = new Vector3(randomCirclePosition.x, 0f, randomCirclePosition.y) + transform.position;
 
-            // Instantieer de vijand
             GameObject spawnedEnemy = Instantiate(enemyToSpawn, spawnPosition, Quaternion.identity);
 
-            // Wacht met spawnen tot de volgende seconde
             yield return new WaitForSeconds(1f);
         }
     }
 
-
     IEnumerator SpawnWaves()
     {
-        while (true) // Infinite loop
+        while (true)
         {
             waveTimerText.text = timeBetweenWaves.ToString();
             Debug.Log("Wave " + (currentWave + 1) + " started!");
@@ -107,6 +101,13 @@ public class WaveManager : MonoBehaviour
 
             // Wait until all enemies are defeated
             yield return new WaitUntil(() => GameObject.FindGameObjectsWithTag("Zombie").Length == 0);
+
+            // Calculate money earned for the current wave
+            int waveMoney = (currentWave == 0) ? 10 : Mathf.RoundToInt(10 * (1 + 0.1f * currentWave));
+
+            money += waveMoney;
+
+            Debug.Log("Earned " + waveMoney + " money for Wave " + (currentWave + 1));
 
             currentWave++;
 
