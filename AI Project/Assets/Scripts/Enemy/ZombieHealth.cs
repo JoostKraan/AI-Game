@@ -3,12 +3,13 @@ using UnityEngine.UI;
 
 public class ZombieHealth : MonoBehaviour
 {
-    // De gezondheid van de zombie, toegankelijk vanuit andere scripts
     public int maxHealth = 100;
     public int currentHealth = 100;
     public Image healthBarFill;
-   
-    
+    public int enemiesKilled = 0;
+
+    // Event for when the zombie dies
+    public event System.Action OnDeath;
 
     public void TakeDamage(int damage)
     {
@@ -24,6 +25,7 @@ public class ZombieHealth : MonoBehaviour
             Die();
         }
     }
+
     void UpdateHealthBar()
     {
         float fillAmount = (float)currentHealth / maxHealth;
@@ -32,13 +34,16 @@ public class ZombieHealth : MonoBehaviour
 
     void Die()
     {
+        enemiesKilled++;
+        // Trigger the OnDeath event
+        Debug.Log(enemiesKilled);
+
         // Implement any death logic here
         Destroy(gameObject);
     }
 
-
-    void start()
+    void Start()
     {
-
+        // You can initialize any variables or perform setup here
     }
 }

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Turret : Building
 {
@@ -26,8 +27,9 @@ public class Turret : Building
     public float TurretRotationRandomness = 10.0f;
     public float TurretTargetRotationThreshold = 50.0f;
     public float BarrelZRotationIncrement = 50f;
+    public Image healthBarFill;
 
-    public bool canShoot;
+    public bool canShoot { get; set; }
 
     public int durability = 3; // Adjust the starting durability as needed
 
@@ -65,6 +67,15 @@ public class Turret : Building
         {
             FindNearestEnemy();
         }
+
+        UpdateHealthBar();
+    }
+
+    private void UpdateHealthBar()
+    {
+        float fillAmount = (float)durability / 50;
+        print(fillAmount);
+        healthBarFill.fillAmount = fillAmount;
     }
 
     private void RotateTowardsTarget()
@@ -133,17 +144,20 @@ public class Turret : Building
 
     private void Shoot()
     {
-        GameObject bullet = Instantiate(bulletPrefab, bulletSpawnPoint.position, Quaternion.identity);
+        GameObject bullet = Instantiate(bulletPrefab, bulletSpawnPoint.position, bulletPrefab.transform.rotation);
+        bullet.transform.forward = bullet.GetComponent<Rigidbody>().velocity;
 
         Bullet bulletController = bullet.GetComponent<Bullet>();
         if (bulletController != null)
         {
             Rigidbody bulletRigidbody = bullet.GetComponent<Rigidbody>();
+
             if (bulletRigidbody != null)
             {
                 bulletRigidbody.AddForce(-bulletSpawnPoint.forward * bulletForce, ForceMode.Impulse);
             }
         }
+
 
         if (audioSource != null && shootSound != null)
         {

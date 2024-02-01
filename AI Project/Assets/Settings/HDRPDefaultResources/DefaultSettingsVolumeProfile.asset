@@ -79,17 +79,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   active: 1
   quality:
-    m_OverrideState: 0
-    m_Value: 1
+    m_OverrideState: 1
+    m_Value: 2
   enable:
     m_OverrideState: 1
     m_Value: 1
   length:
-    m_OverrideState: 0
+    m_OverrideState: 1
     m_Value: 0.15
   opacity:
-    m_OverrideState: 0
-    m_Value: 1
+    m_OverrideState: 1
+    m_Value: 0.81
   distanceScaleFactor:
     m_OverrideState: 0
     m_Value: 0.5
@@ -109,11 +109,11 @@ MonoBehaviour:
     m_OverrideState: 0
     m_Value: 0.2
   thicknessScale:
-    m_OverrideState: 0
-    m_Value: 0.15
+    m_OverrideState: 1
+    m_Value: 0.261
   m_SampleCount:
-    m_OverrideState: 0
-    m_Value: 10
+    m_OverrideState: 1
+    m_Value: 16
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -507,7 +507,7 @@ MonoBehaviour:
     m_Value: 0
   intensity:
     m_OverrideState: 1
-    m_Value: 0.5
+    m_Value: 0.93
   directLightingStrength:
     m_OverrideState: 0
     m_Value: 0
@@ -582,7 +582,7 @@ MonoBehaviour:
   active: 1
   mode:
     m_OverrideState: 1
-    m_Value: 2
+    m_Value: 1
   useFullACES:
     m_OverrideState: 0
     m_Value: 0

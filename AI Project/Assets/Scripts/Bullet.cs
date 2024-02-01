@@ -1,4 +1,3 @@
-
 using UnityEngine;
 
 public class Bullet : MonoBehaviour
@@ -6,17 +5,27 @@ public class Bullet : MonoBehaviour
     public float lifetime = 10f; // Adjust this to set the lifetime of the bullet
     public int damage = 50;
     public GameObject damageNumberPrefab;
+
+    private Rigidbody rb;
+
+    private void Awake()
+    {
+        rb = GetComponent<Rigidbody>();
+    }
+
     void Start()
     {
-        // Destroy the bullet after a specified lifetime
-        Destroy(gameObject, lifetime);
+        // Destroy the bullet after a specified lifetime using Invoke
+        Invoke("DestroyBullet", lifetime);
+
+        // Set the initial orientation based on velocity
+        transform.forward = rb.velocity;
     }
 
     private void Update()
     {
-        Vector3 velocity = GetComponent<Rigidbody>().velocity;
-        velocity.y += 90f;
-        transform.rotation = Quaternion.Euler(velocity);
+        // Update the orientation of the bullet based on velocity
+        transform.forward = rb.velocity;
     }
 
     void OnCollisionEnter(Collision collision)
@@ -31,13 +40,20 @@ public class Bullet : MonoBehaviour
             SpawnDamageNumber(collision.contacts[0].point);
         }
 
+        // Destroy the bullet immediately on collision
+        DestroyBullet();
+    }
+
+    private void DestroyBullet()
+    {
         Destroy(gameObject);
     }
+
     private void SpawnDamageNumber(Vector3 position)
     {
         GameObject damageNumber = Instantiate(damageNumberPrefab, position, Quaternion.identity);
         DamageNumber damageNumberScript = damageNumber.GetComponentInChildren<DamageNumber>();
-        
+
         if (damageNumberScript != null)
         {
             damageNumberScript.SetDamageText(damage);

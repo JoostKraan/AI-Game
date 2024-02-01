@@ -11,7 +11,9 @@ public class PlayerMovement : MonoBehaviour
     public GameObject shootingDirectionReference; // Assign the GameObject whose forward direction you want to use
     public float sprintSpeedMultiplier = 2f; // Adjust this to set the sprint speed multiplier
     public float sprintDuration = 0.5f; // Adjust this to set the sprint duration in seconds
-    public float sprintCooldown = 2f; // Adjust this to set the sprint cooldown in seconds
+    public float sprintCooldown = 2f; // Adjust this to set the sprint cooldown in 
+    public float shootingCooldown = 0.5f; // Adjust this to set the shooting cooldown in seconds
+    public float shootingForce = 100f; // Adjust this to set the force used for shooting the bullet in 
 
     private float originalSpeed; // Store the original speed before sprinting
     private bool isSprinting = false; // Flag to track if the player is currently sprinting
@@ -34,8 +36,8 @@ public class PlayerMovement : MonoBehaviour
     void Update()
     {
         // Get input from arrow keys
-        float horizontalInput = Input.GetAxis("Horizontal");
-        float verticalInput = Input.GetAxis("Vertical");
+        float horizontalInput = Input.GetAxisRaw("Horizontal");
+        float verticalInput = Input.GetAxisRaw("Vertical");
 
         // Check for sprint input (only trigger once when Shift key is pressed and after cooldown)
         if (Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.RightShift))
@@ -56,9 +58,9 @@ public class PlayerMovement : MonoBehaviour
         rb.AddForce(movement * (isSprinting ? speed * sprintSpeedMultiplier : speed));
 
         // Check for shooting input
-        if (Input.GetMouseButtonDown(0) && canShoot) // Change to the appropriate mouse button (0 for left, 1 for right, 2 for middle)
+        if (Input.GetMouseButton(0) && canShoot)
         {
-            ShootProjectile();
+            StartCoroutine(ShootWithCooldown());
         }
     }
 
@@ -86,11 +88,11 @@ public class PlayerMovement : MonoBehaviour
         // Calculate the spawn position in front of the player
         Vector3 spawnPosition = transform.position + transform.right * projectileOffset;
 
-        // Instantiate a projectile at the calculated position and rotation
-        GameObject projectile = Instantiate(projectilePrefab, spawnPosition, Quaternion.identity);
-
         // Get the forward direction of the shooting direction reference object
         Vector3 shootingDirection = shootingDirectionReference.transform.right;
+
+        // Instantiate a projectile at the calculated position and rotation
+        GameObject projectile = Instantiate(projectilePrefab, spawnPosition, Quaternion.identity);
 
         // Set the y-component of the shooting direction to zero to restrict vertical movement
         shootingDirection.y = 0f;
@@ -98,16 +100,29 @@ public class PlayerMovement : MonoBehaviour
         // Normalize the shooting direction to maintain the same speed in all directions
         shootingDirection.Normalize();
 
-        // Apply rotation to the projectile to match the specified shooting direction
-        //float angle = Mathf.Atan2(shootingDirection.y, shootingDirection.x) * Mathf.Rad2Deg;
+        // Directly set the initial rotation of the projectile
+        projectile.transform.rotation = Quaternion.LookRotation(transform.right);
 
         // Add force to the projectile in the direction of the specified shooting direction
         Rigidbody projectileRb = projectile.GetComponent<Rigidbody>();
         if (projectileRb != null)
         {
-            projectileRb.AddForce(shootingDirection * 10f, ForceMode.Impulse); // Adjust the force as needed
+            projectileRb.AddForce(shootingDirection * shootingForce, ForceMode.Impulse); // Adjust the force as needed
         }
+    }
 
+    IEnumerator ShootWithCooldown()
+    {
+        if (canShoot)
+        {
+            ShootProjectile();
+            canShoot = false;
+
+            // Wait for the specified shooting cooldown
+            yield return new WaitForSeconds(shootingCooldown);
+
+            canShoot = true;
+        }
     }
     IEnumerator StartSprint()
     {

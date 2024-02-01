@@ -1,4 +1,4 @@
-using System.Linq;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,6 +10,7 @@ public struct BuildingInfo
     public Button button; // The UI button for this building
     public Vector3 offset;
     public int buildCost; // The cost in points to build this structure
+    public TMP_Text buildCostText;
 }
 
 public class BuildingManager : MonoBehaviour
@@ -25,24 +26,39 @@ public class BuildingManager : MonoBehaviour
     private int currentIndex = 0; // The current index for the buildingInfos array
     private int playerPoints = 100; // Initial points for the player
     public float maxBuildDistance = 10f; // Maximum distance from the player to allow building
+    public GameObject buildRangeIndicator;
 
     // Variables for color management
     private Color originalColor;
     public Color canPlaceColor = Color.green;
     public Color cannotPlaceColor = Color.red;
 
+    // Text for player points
+    public TMP_Text playerPointsText;
+
     private void Start()
     {
+        buildRangeIndicator.SetActive(false);
+        buildRangeIndicator.transform.localScale = new Vector3(maxBuildDistance / 3, maxBuildDistance / 3, 1);
+
         foreach (var info in buildingInfos)
         {
             info.button.interactable = false;
+            info.buildCostText.SetText("Cost : " + info.buildCost.ToString());
         }
 
         buildingUI.SetActive(false);
+        UpdatePlayerPointsText();
+    }
+
+    void UpdatePlayerPointsText()
+    {
+        playerPointsText.text = "Player Points: " + playerPoints;
     }
 
     void Update()
     {
+        UpdatePlayerPointsText();
         HandleInput();
 
         if (isPlacing)
@@ -59,15 +75,6 @@ public class BuildingManager : MonoBehaviour
                 else
                 {
                     SetBuildingColor(cannotPlaceColor); // Change the color to red if it cannot be placed
-                }
-
-                if (currentBuilding.GetComponent<Building>() is Turret turret)
-                {
-                    turret.canShoot = false;
-                }
-                else if (currentBuilding.GetComponent<Building>() is Mine mine)
-                {
-                    mine.canExplode = false;
                 }
             }
         }
@@ -222,6 +229,8 @@ public class BuildingManager : MonoBehaviour
 
         buildingUI.SetActive(buildMode);
 
+        buildRangeIndicator.gameObject.SetActive(buildMode);
+
         player.canShoot = !buildMode;
 
         foreach (var info in buildingInfos)
@@ -239,14 +248,38 @@ public class BuildingManager : MonoBehaviour
     {
         SetBuildingColor(originalColor); // Return to the original color
         currentBuilding.GetComponent<Collider>().isTrigger = false;
+        playerPoints -= buildingInfos[currentIndex].buildCost;
+
+        if (currentBuilding.TryGetComponent(out Turret turret))
+        {
+            turret.canShoot = true;
+            print(turret.canShoot);
+        }
+        else if (currentBuilding.TryGetComponent(out Mine mine))
+        {
+            mine.GetComponent<SphereCollider>().isTrigger = true;
+            mine.canExplode = true;
+        }
+
         isPlacing = false;
         currentBuilding = null;
+        return;
     }
 
     void StartPlacingBuilding()
     {
-        isPlacing = true;
         CreatePreviewBuilding();
+
+        if (currentBuilding.GetComponent<Building>() is Turret turret)
+        {
+            turret.canShoot = false;
+        }
+        else if (currentBuilding.GetComponent<Building>() is Mine mine)
+        {
+            mine.canExplode = false;
+        }
+
+        isPlacing = true;
     }
 
     void DestroyPlacingBuilding()
@@ -258,6 +291,8 @@ public class BuildingManager : MonoBehaviour
 
     bool CanPlaceBuilding()
     {
+        if (playerPoints < buildingInfos[currentIndex].buildCost) return false;
+
         Collider collider = currentBuilding.GetComponent<Collider>();
 
         // Use an axis-aligned bounding box that encompasses the entire rotated object

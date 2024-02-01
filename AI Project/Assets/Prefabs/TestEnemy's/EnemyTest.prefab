@@ -15,8 +15,8 @@ GameObject:
   - component: {fileID: -2661247788631422770}
   - component: {fileID: 5998262164437086116}
   - component: {fileID: -6520364224515699564}
-  - component: {fileID: 7198322651968278754}
-  m_Layer: 0
+  - component: {fileID: 3955779760267190075}
+  m_Layer: 10
   m_Name: EnemyTest
   m_TagString: Zombie
   m_Icon: {fileID: 0}
@@ -147,8 +147,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   coreTag: Core
-  damageInterval: 2
-  damageRange: 3
+  damageInterval: 1
+  damageRange: 10
   bruteZombie: 0
   zombieDamage: 5
   bruteDamage: 10
@@ -167,6 +167,33 @@ MonoBehaviour:
   maxHealth: 50
   currentHealth: 50
   healthBarFill: {fileID: 7993538431426882881}
+--- !u!54 &3955779760267190075
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3570617123806146448}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 126
+  m_CollisionDetection: 0
 --- !u!1 &4623262283470262863
 GameObject:
   m_ObjectHideFlags: 0
@@ -179,7 +206,7 @@ GameObject:
   - component: {fileID: 8716244378488394223}
   - component: {fileID: 7902070333959842469}
   - component: {fileID: 5150077252112861776}
-  m_Layer: 5
+  m_Layer: 10
   m_Name: Healthbar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -280,7 +307,7 @@ GameObject:
   - component: {fileID: 8609556190950346312}
   - component: {fileID: 4843430725304016824}
   - component: {fileID: 7993538431426882881}
-  m_Layer: 5
+  m_Layer: 10
   m_Name: HealthbarSprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
