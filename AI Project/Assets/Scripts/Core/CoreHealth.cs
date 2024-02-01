@@ -12,6 +12,7 @@ public class CoreHealth : MonoBehaviour
     private void Start()
     {
         coreStaticHealth = coreHealth;
+        Time.timeScale = 1;
     }
 
     void Update()
@@ -28,6 +29,7 @@ public class CoreHealth : MonoBehaviour
         {
             Destroy(gameObject);
             lostPanel.SetActive(true);
+            Time.timeScale = 0;
         }
     }
 
