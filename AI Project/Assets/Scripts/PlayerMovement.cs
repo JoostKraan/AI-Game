@@ -15,7 +15,6 @@ public class PlayerMovement : MonoBehaviour
     public float shootingCooldown = 0.5f; // Adjust this to set the shooting cooldown in seconds
     public float shootingForce = 100f; // Adjust this to set the force used for shooting the bullet in 
 
-
     private float originalSpeed; // Store the original speed before sprinting
     private bool isSprinting = false; // Flag to track if the player is currently sprinting
     private float lastSprintTime = 0f; // Record the time of the last sprint
@@ -89,11 +88,11 @@ public class PlayerMovement : MonoBehaviour
         // Calculate the spawn position in front of the player
         Vector3 spawnPosition = transform.position + transform.right * projectileOffset;
 
-        // Instantiate a projectile at the calculated position and rotation
-        GameObject projectile = Instantiate(projectilePrefab, spawnPosition, Quaternion.identity);
-
         // Get the forward direction of the shooting direction reference object
         Vector3 shootingDirection = shootingDirectionReference.transform.right;
+
+        // Instantiate a projectile at the calculated position and rotation
+        GameObject projectile = Instantiate(projectilePrefab, spawnPosition, Quaternion.identity);
 
         // Set the y-component of the shooting direction to zero to restrict vertical movement
         shootingDirection.y = 0f;
@@ -101,8 +100,8 @@ public class PlayerMovement : MonoBehaviour
         // Normalize the shooting direction to maintain the same speed in all directions
         shootingDirection.Normalize();
 
-        // Apply rotation to the projectile to match the specified shooting direction
-        //float angle = Mathf.Atan2(shootingDirection.y, shootingDirection.x) * Mathf.Rad2Deg;
+        // Directly set the initial rotation of the projectile
+        projectile.transform.rotation = Quaternion.LookRotation(transform.right);
 
         // Add force to the projectile in the direction of the specified shooting direction
         Rigidbody projectileRb = projectile.GetComponent<Rigidbody>();
@@ -110,8 +109,8 @@ public class PlayerMovement : MonoBehaviour
         {
             projectileRb.AddForce(shootingDirection * shootingForce, ForceMode.Impulse); // Adjust the force as needed
         }
-
     }
+
     IEnumerator ShootWithCooldown()
     {
         if (canShoot)

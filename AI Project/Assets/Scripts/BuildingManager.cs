@@ -26,6 +26,7 @@ public class BuildingManager : MonoBehaviour
     private int currentIndex = 0; // The current index for the buildingInfos array
     private int playerPoints = 100; // Initial points for the player
     public float maxBuildDistance = 10f; // Maximum distance from the player to allow building
+    public GameObject buildRangeIndicator;
 
     // Variables for color management
     private Color originalColor;
@@ -37,6 +38,9 @@ public class BuildingManager : MonoBehaviour
 
     private void Start()
     {
+        buildRangeIndicator.SetActive(false);
+        buildRangeIndicator.transform.localScale = new Vector3(maxBuildDistance / 3, maxBuildDistance / 3, 1);
+
         foreach (var info in buildingInfos)
         {
             info.button.interactable = false;
@@ -224,6 +228,8 @@ public class BuildingManager : MonoBehaviour
         buildMode = !buildMode;
 
         buildingUI.SetActive(buildMode);
+
+        buildRangeIndicator.gameObject.SetActive(buildMode);
 
         player.canShoot = !buildMode;
 
