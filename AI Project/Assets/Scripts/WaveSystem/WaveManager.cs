@@ -63,7 +63,7 @@ public class WaveManager : MonoBehaviour
 
     IEnumerator SpawnEnemiesWithDelay()
     {
-        int numberOfEnemies = (currentWave + 1) * 2;
+        int numberOfEnemies = 1;
 
         for (int i = 0; i < numberOfEnemies; i++)
         {
