@@ -24,7 +24,7 @@ public class BuildingManager : MonoBehaviour
     private bool isPlacing = false; // Flag to check if a building is currently being placed
     public bool buildMode;
     private int currentIndex = 0; // The current index for the buildingInfos array
-    private int playerPoints = 100; // Initial points for the player
+    private int playerPoints = 100000; // Initial points for the player
     public float maxBuildDistance = 10f; // Maximum distance from the player to allow building
     public GameObject buildRangeIndicator;
 
