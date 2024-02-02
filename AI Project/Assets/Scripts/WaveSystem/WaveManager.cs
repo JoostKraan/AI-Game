@@ -13,7 +13,7 @@ public class WaveManager : MonoBehaviour
     public Animator crystalAnimator;
 
     private int currentWave = 0;
-    private int money = 0;
+    private int money = 500;
 
     void Start()
     {
